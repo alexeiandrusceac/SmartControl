@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listWithButtons"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cameraRemote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="15dip"
+
+            android:layout_marginRight="10dip"
+            android:padding="28dip"
+            android:text="Camera remote" />
+
+
+        <Button
+            android:id="@+id/dataRemote"
+            android:layout_width="169dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dip"
+
+            android:layout_marginRight="15dip"
+            android:layout_toRightOf="@id/cameraRemote"
+            android:padding="28dip"
+            android:text="Data remote" />
+
+
+    </ListView>
+</android.support.v4.widget.SwipeRefreshLayout>
