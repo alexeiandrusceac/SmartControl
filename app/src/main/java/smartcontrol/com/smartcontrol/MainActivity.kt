@@ -12,7 +12,7 @@ import android.widget.ListView
 import smartcontrol.com.smartcontrol.CameraRemote.CameraRemote
 import java.lang.Thread.sleep
 
-class MainActivity : AppCompatActivity(),/*AsyncTask<SwipeRefreshLayout,String,Unit>() */{
+class MainActivity : AppCompatActivity()/*AsyncTask<SwipeRefreshLayout,String,Unit>() */{
     /*override fun doInBackground(vararg layouts: SwipeRefreshLayout) {
         swipeRefreshLayout = layouts[0]
         sleep(3000)}

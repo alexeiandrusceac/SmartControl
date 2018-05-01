@@ -1,4 +1,4 @@
 package smartcontrol.com.smartcontrol.CameraRemote
 
-class CameraRemote : Camera {
+class CameraRemote {
 }
