@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">SmartControl</string>
+    <string name="app_name">Smart Control</string>
+    <string name="camera">Video control</string>
+    <string name="data">Control / setarea datelor</string>
+    <string name="switchOffLight">Stinge lumina</string>
+    <string name="stopTimer">Opreste </string>
 </resources>
