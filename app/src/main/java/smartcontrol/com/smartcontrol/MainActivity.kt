@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraRemote: ImageButton
     private lateinit var bluetoothConn: BluetoothConn
     private lateinit var arduinoData: ArduinoData
-
+/////https://github.com/Kanaris/OV7670/blob/master/android/Merl1nVision/app/src/main/java/info/privateblog/merl1n/merl1nvision/drawing/DrawThread.java
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
         setContentView(R.layout.activity_main)
