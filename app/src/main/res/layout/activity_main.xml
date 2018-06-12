@@ -6,13 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
+    <LinearLayout android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:weightSum="2"
         android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -45,6 +48,38 @@
             android:layout_toRightOf="@id/cameraRemote"
             android:padding="28dip"
             android:text="@string/data" />
+        </LinearLayout>
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:weightSum="2"
+            android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageButton
+                        android:id="@+id/settings"
+                        android:layout_width="match_parent"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="15dip"
+                        android:layout_marginRight="10dip"
+                        android:padding="28dip"
+                        android:text="@string/settings" />
+                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

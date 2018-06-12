@@ -4,4 +4,5 @@
     <string name="data">Control / setarea datelor</string>
     <string name="switchOffLight">Stinge lumina</string>
     <string name="stopTimer">Opreste </string>
+    <string name="settings">Setari</string>
 </resources>

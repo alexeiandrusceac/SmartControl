@@ -1,7 +1,6 @@
-package smartcontrol.com.smartcontrol
+package smartcontrol.com.smartcontrol.Arduino
 
 import android.content.Context
-import android.os.CpuUsageInfo
 
 class  ArduinoActions{
     private lateinit var arduinoActions: ArduinoActions
@@ -21,9 +20,14 @@ class  ArduinoActions{
 
     }
 
-    fun setTime(hours: Int, minutes: Int) {
-
+    fun getData()
+    {
 
     }
+    fun setTime(hours: Int, minutes: Int) {
+    }
+    fun getCamera()
+    {
 
+    }
 }
