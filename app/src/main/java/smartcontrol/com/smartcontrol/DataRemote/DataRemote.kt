@@ -2,7 +2,6 @@ package smartcontrol.com.smartcontrol.DataRemote
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.widget.Button
 import smartcontrol.com.smartcontrol.R
 
@@ -21,22 +20,8 @@ class DataRemote : AppCompatActivity() {
         val stopExecution : (Button) = findViewById(R.id.stopTimer)
         val clearExecution : (Button)=findViewById(R.id.clearData)
 
-        switchOffTheLight.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                off = true
-            }
-        })
-        stopExecution.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(v: View?) {
-                stopExecBol = true
-
-            }
-        })
-
-        clearExecution.setOnClickListener(object: View.OnClickListener{
-            override fun onClick(v: View?) {
-
-            }
-        })
+        switchOffTheLight.setOnClickListener { off = true }
+        stopExecution.setOnClickListener { stopExecBol = true }
+        clearExecution.setOnClickListener { }
     }
 }

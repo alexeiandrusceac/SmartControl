@@ -1,4 +1,4 @@
-package smartcontrol.com.smartcontrol.bluetooth.bluetoothException
+package smartcontrol.com.smartcontrol.bluetooth
 
 open class BluetoothException : Exception {
     constructor(throwable: Throwable):super(throwable){}

@@ -1,6 +1,6 @@
 package smartcontrol.com.smartcontrol.Drawing
 
-abstract class ImageHandler {
+ class ImageHandler {
     private var WIDTH: Int = 240
     private var HEIGHT: Int = 320
 

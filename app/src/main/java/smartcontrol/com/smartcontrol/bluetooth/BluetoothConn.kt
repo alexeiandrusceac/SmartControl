@@ -1,182 +1,180 @@
 package smartcontrol.com.smartcontrol.bluetooth
 
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 
-import smartcontrol.com.smartcontrol.MainActivity
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import java.util.*
-import java.util.logging.Logger
+import android.bluetooth.BluetoothDevice
+import java.lang.reflect.Method
 
-class BluetoothConn : Thread() {
-    private var bluetoothAdapter: BluetoothAdapter? = null
-    private var bluetoothDevice: BluetoothDevice? = null
-    private var bluetoothSocket: BluetoothSocket? = null
-    private var connected: Boolean = false
-    private var founded: Boolean = false
-    private var bluetoothConn: BluetoothConn? = null
-    private var isBTEnabled: Boolean = true
-    private lateinit var robotName: String
-    private lateinit var outputStream: OutputStream
-    private lateinit var inputStream: InputStream
-    private val mMessages = ArrayList<String>()
-    private val DELIMITER  = '#'
+import java.io.*
 
-    fun getInstance(): BluetoothConn? {
-        return if (bluetoothConn == null) {
-            BluetoothConn()
-        } else {
-            bluetoothConn
-        }
+
+class BluetoothConn {
+    private  lateinit var bluetoothAdapter: BluetoothAdapter
+    private  lateinit var bluetoothSocket: BluetoothSocket
+    private  var  bluetoothDevice: BluetoothDevice? =null
+    private  var outStream: OutputStream?=null
+    private  var inputStream: InputStream?=null
+
+    fun BluetoothConn() {
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     }
 
-    fun BluetoothConn(name: String) {
+    @Synchronized
+    @Throws(BluetoothException::class)
+    fun connectToDevice(address: String) {
+        if (!isDeviceBTSuported())
+            throw NotSupportBlToothException()
+        if (isDeviceConnected())
+            return
+        val bluetoothDevice : BluetoothDevice = bluetoothAdapter.getRemoteDevice(address)
+
         try {
-            robotName = name
-            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-            if (bluetoothAdapter == null) {
-                Logger.getLogger(MainActivity::class.java.name).warning("Dispozitivul nu suporta Bluetooth")
-
-            }
-            if (!isBTEnabled) {
-                Logger.getLogger(MainActivity::class.java.name).warning("Bluetooth nu este activat")
-            }
-            var setPairedDevice: Set<BluetoothDevice> = bluetoothAdapter!!.bondedDevices
-            if (setPairedDevice.size > 0) {
-                for (device: BluetoothDevice in setPairedDevice) {
-                    if (device.name.equals(robotName)) {
-                        bluetoothDevice = device
-                        founded = true
-                        break
-                    }
-                }
-            }
-            if (!founded) {
-                Logger.getLogger(MainActivity::class.java.name).warning("Nu este nici un dispozitiv cu Bluetooth imperecheat")
-            }
-        } catch (e: Exception) {
-            Logger.getLogger(MainActivity::class.java.name).warning(e.message)
-        }
-    }
-
-    fun isBTEnabled(): Boolean {
-        return bluetoothAdapter!!.isEnabled
-    }
-
-    fun connectToDevice(): Boolean {
-
-        if (!founded) {
-            return false
-        }
-        try {
-            Logger.getLogger(MainActivity::class.java.name).warning("Se conecteaza")
-
-            val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-            bluetoothSocket = bluetoothDevice!!.createInsecureRfcommSocketToServiceRecord(uuid)
-            bluetoothSocket!!.connect()
-            outputStream = bluetoothSocket!!.outputStream
-            inputStream = bluetoothSocket!!.inputStream
-            connected = true
-            this.start()
-            Logger.getLogger(MainActivity::class.java.name).warning(bluetoothAdapter!!.name.toString())
-            Logger.getLogger(MainActivity::class.java.name).warning("OK")
-            return true
+            val method: Method = bluetoothDevice.javaClass.getMethod("createRfcommSocket", *arrayOf<Class<*>>(Int::class.javaPrimitiveType!!))
+            bluetoothSocket = method.invoke(bluetoothDevice, 1) as BluetoothSocket
+            bluetoothSocket.connect()
+            outStream = DataOutputStream(bluetoothSocket.outputStream)
+            inputStream = DataInputStream(bluetoothSocket.inputStream)
         } catch (exception: Exception) {
-            return false
+            bluetoothSocket!!
+            throw ConnectionBTException(exception)
         }
     }
 
-    override fun run() {
+    @Throws(BluetoothException::class, IOException::class)
+    fun write(commByte: ByteArray) {
+        if (outStream != null) {
+            outStream!!.write(commByte)
+            outStream!!.flush()
+        } else {
+            throw ConnectionBTException("Nu sa connectat ")
+        }
+    }
 
-        while (true) {
-            if (connected) {
-                try {
-                    var ch: Byte
-                    val buffer = ByteArray(1024)
-                    var i = 0
+    @Throws(BluetoothException::class, IOException::class)
+    fun read(): Int {
+        val readResult: Int
+        if (inputStream != null) {
+            readResult = inputStream!!.read()
+        } else {
+            throw ConnectionBTException("Nu sa connectat")
+        }
+        return readResult
+    }
 
-                    val s = ""
-                    do {
-                        ch = inputStream.read().toByte()
-                        if (ch == DELIMITER.toByte()) {
-                            buffer[i++] = ch
-                        }
-                    } while (true)
+    private fun isDeviceBTSuported(): Boolean {
+        if (getBTAdapter() == null)
+            return false
+        return true
 
-                    buffer[i] = '\u0000'.toByte()
+    }
 
-                    val msg = String(buffer)
+    fun getBTAdapter(): BluetoothAdapter {
+        if (bluetoothAdapter == null) {
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        }
+        return bluetoothAdapter!!
+    }
 
-                    MessageReceived(msg.trim { it <= ' ' })
-                    Logger.getLogger(MainActivity::class.java.name).warning("[Blue]:$msg")
+    fun isDeviceConnected(): Boolean {
+        return bluetoothSocket != null
+    }
 
-                } catch (e: IOException) {
-                    Logger.getLogger(MainActivity::class.java.name).warning("->[#]Failed to receive message: " + e.message)
-                }
+    @Throws(BluetoothException::class)
+    fun getPairedDevices(): Map<String, String> {
+        if(!isDeviceBTSuported())
+        {
+            throw NotSupportBlToothException()
+        }
+        val pairedDevicesAdapter  = HashMap<String,String>()
+        val pairedDevice = bluetoothAdapter!!.bondedDevices
+        if(!pairedDevice.isEmpty())
+        {
+            for(bluetoothDevice : BluetoothDevice in pairedDevice)
+            {
+                pairedDevicesAdapter.put(bluetoothDevice.name,bluetoothDevice.address)
 
             }
         }
+        return pairedDevicesAdapter
     }
 
-    private fun MessageReceived(msg: String) {
-        try {
+    @Throws(BluetoothException::class)
+    fun cancelDiscovery() {
+        if (!isDeviceBTSuported())
+            throw NotSupportBlToothException()
 
-            mMessages.add(msg)
+        if (getBTAdapter().isDiscovering()) {
+            getBTAdapter().cancelDiscovery()
+        }
+    }
+
+    /**
+     * Start discovery
+     * @return value
+     * @throws BluetoothException
+     */
+    @Throws(BluetoothException::class)
+    fun startDiscovery(): Boolean {
+        if (!isDeviceBTSuported())
+            throw NotSupportBlToothException()
+
+        if (getBTAdapter().isDiscovering()) {
+            getBTAdapter().cancelDiscovery()
+        }
+        return getBTAdapter().startDiscovery()
+    }
+
+    /**
+     * Get Adapter name
+     * @return name
+     * @throws BluetoothException
+     */
+    @Throws(BluetoothException::class)
+    fun getAdapterName(): String {
+        if (!isDeviceBTSuported())
+            throw NotSupportBlToothException()
+        return getBTAdapter().name
+    }
+
+    @Throws(BluetoothException::class, IOException::class)
+    fun read(response: ByteArray): Int {
+        val result: Int
+        if (inputStream != null) {
+            result = inputStream!!.read(response)
+        } else {
+            throw ConnectionBTException("Nu este conectat")
+        }
+        return result
+    }
+
+    @Synchronized
+    @Throws(BluetoothException::class)
+    fun disconnect() {
+        cancelDiscovery()
+
+        if (outStream != null) {
             try {
-                
-            } catch (e: IllegalMonitorStateException) {
-                //
+                outStream!!.close()
+            } catch (e: IOException) {
             }
 
-        } catch (e: Exception) {
-            Logger.getLogger(MainActivity::class.java.name).warning("->[#] Failed to receive message: " + e.message)
         }
-
-    }
-
-    fun hasMensagem(i: Int): Boolean {
-        try {
-            val s = mMessages.get(i)
-            return if (s.length > 0)
-                true
-            else
-                false
-        } catch (e: Exception) {
-            return false
-        }
-
-    }
-
-    fun getMenssage(i: Int): String {
-        return mMessages.get(i)
-    }
-
-    fun clearMessages() {
-        mMessages.clear()
-    }
-
-    fun countMessages(): Int {
-        return mMessages.size
-    }
-
-    fun getLastMessage(): String {
-        return if (countMessages() == 0) "" else mMessages.get(countMessages() - 1)
-    }
-
-    fun SendMessage(msg: String) {
-        try {
-            if (connected) {
-                outputStream.write(msg.toByteArray())
+        if (inputStream != null) {
+            try {
+                inputStream!!.close()
+            } catch (e: IOException) {
             }
 
-        } catch (e: IOException) {
-            Logger.getLogger(MainActivity::class.java.name).warning("->[#]Error while sending message: " + e.message)
         }
+        if (bluetoothSocket != null) {
+            try {
+                bluetoothSocket!!.close()
+            } catch (e: IOException) {
+            }
 
+        }
+        bluetoothSocket!!
     }
-
 
 }
