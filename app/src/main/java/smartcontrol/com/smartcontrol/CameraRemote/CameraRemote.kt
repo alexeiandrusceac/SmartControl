@@ -4,18 +4,15 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.view.SurfaceHolder
-
 import android.view.SurfaceView
-import smartcontrol.com.smartcontrol.Arduino.ArduinoActions
 import smartcontrol.com.smartcontrol.Drawing.ImageHandler
 import smartcontrol.com.smartcontrol.Drawing.SurfaceDrawer
-
 import smartcontrol.com.smartcontrol.R
 
 class CameraRemote : AppCompatActivity() {
-    //private lateinit var cameraLive: CameraRemote
+
     private lateinit var surfaceView: SurfaceView
-    private lateinit var arduinoActions: ArduinoActions
+
     private lateinit var  surfaceHolder: SurfaceHolder
     private var  imageHandler : ImageHandler = ImageHandler()
     private  var  surfaceDrawer : SurfaceDrawer = SurfaceDrawer(imageHandler)
@@ -25,8 +22,7 @@ class CameraRemote : AppCompatActivity() {
         setContentView(R.layout.camera_remote)
 
         val connectBT = intent.getStringExtra("conB")
-        //arduinoActions = ArduinoActions().getInstance(this)
-        surfaceView = findViewById(R.id.cameraArduinoView)
+
         surfaceHolder = surfaceView.holder
         surfaceHolder.addCallback(surfaceDrawer)
 

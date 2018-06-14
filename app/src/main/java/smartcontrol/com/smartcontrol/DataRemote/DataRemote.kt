@@ -16,9 +16,6 @@ class DataRemote : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.data_remote)
-        val switchOffTheLight : (Button) = findViewById(R.id.switchOffLight)
-        val stopExecution : (Button) = findViewById(R.id.stopTimer)
-        val clearExecution : (Button)=findViewById(R.id.clearData)
 
         switchOffTheLight.setOnClickListener { off = true }
         stopExecution.setOnClickListener { stopExecBol = true }
